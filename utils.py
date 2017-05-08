@@ -36,6 +36,36 @@ def load_wine(data_dir='../data'):
 	X = np.array(X)
 	y = np.array(y)
 	return X, y
+	
+def color_surface(clf, X, y, n_steps=250, show=True, ylim=None,
+				 xlim=None, ax=None, size=24):
+	if ax is None:
+		fig = plt.figure()
+		ax = plt.gca()
+
+	if xlim is None:
+		xlim = X[:, 0].min(), X[:, 0].max()
+	if ylim is None:
+		ylim = X[:, 1].min(), X[:, 1].max()
+	xx, yy = np.meshgrid(np.linspace(xlim[0], xlim[1], n_steps),
+						 np.linspace(ylim[0], ylim[1], n_steps))
+
+	z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+
+	z = z.reshape(xx.shape)
+	
+	ax.imshow(z, interpolation='nearest',
+	           extent=(xx.min(), xx.max(), yy.min(), yy.max()),
+	           cmap=plt.cm.coolwarm,
+	           aspect='auto', origin='lower')
+
+	ax.scatter(X[:, 0], X[:, 1], c=y, s=size)
+	ax.set_xlim(*xlim)
+	ax.set_ylim(*ylim)
+
+	if show:
+		plt.show()
+
 
 
 def plot_surface(clf, X, y, n_steps=250, show=True, ylim=None,
